@@ -29,7 +29,10 @@ config("internal_config") {
   # ]
   if (is_posix) {
     cflags_c = [ "-std=c99" ]
-    defines += [ "_XOPEN_SOURCE=700" ]
+    defines += [
+      "_BSD_SOURCE",  # Needed for broken uclibc headers.
+      "_XOPEN_SOURCE=700"
+    ]
   }
 }
 
@@ -56,6 +59,7 @@ if (is_win && !is_msan) {
   source_set("boringssl_asm") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
+    asmflags = []
     defines = []
     sources = []
     include_dirs = [ "src/include" ]
