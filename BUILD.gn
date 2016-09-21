@@ -22,11 +22,6 @@ config("internal_config") {
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
   ]
-  # configs = [
-  #   # TODO(davidben): Fix size_t truncations in BoringSSL.
-  #   # https://crbug.com/429039
-  #   "//build/config/compiler:no_size_t_to_int_warning",
-  # ]
   if (is_posix) {
     cflags_c = [ "-std=c99" ]
     defines += [
@@ -43,40 +38,16 @@ config("no_asm_config") {
 
 all_sources = crypto_sources + ssl_sources
 
-# Windows' assembly is built with Yasm. The other platforms use the platform
-# assembler.
-if (is_win && !is_msan) {
-  import("//third_party/yasm/yasm_assemble.gni")
-  yasm_assemble("boringssl_asm") {
-    if (current_cpu == "x64") {
-      sources = crypto_sources_win_x86_64
-    } else if (current_cpu == "x86") {
-      sources = crypto_sources_win_x86
-    }
-  }
+if (is_win) {
+  public_configs = [ ":no_asm_config" ]
 } else {
   # This has no sources on some platforms so must be a source_set.
   source_set("boringssl_asm") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
-    asmflags = []
     defines = []
     sources = []
     include_dirs = [ "src/include" ]
-
-    if ((current_cpu == "arm" || current_cpu == "arm64") && is_clang) {
-      if (current_cpu == "arm") {
-        # TODO(hans) Enable integrated-as (crbug.com/124610).
-        asmflags += [ "-fno-integrated-as" ]
-      }
-      if (is_android) {
-        rebased_android_toolchain_root =
-            rebase_path(android_toolchain_root, root_build_dir)
-
-        # Else /usr/bin/as gets picked up.
-        asmflags += [ "-B${rebased_android_toolchain_root}/bin" ]
-      }
-    }
 
     if (is_msan) {
       public_configs = [ ":no_asm_config" ]
@@ -100,10 +71,6 @@ if (is_win && !is_msan) {
       sources += crypto_sources_linux_arm
     } else if (current_cpu == "arm64" && (is_linux || is_android)) {
       sources += crypto_sources_linux_aarch64
-
-      # TODO(davidben): Remove explicit arch flag once https://crbug.com/576858
-      # is fixed.
-      asmflags += [ "-march=armv8-a+crypto" ]
     } else {
       public_configs = [ ":no_asm_config" ]
     }
