@@ -49,6 +49,17 @@ if (is_win) {
     sources = []
     include_dirs = [ "src/include" ]
 
+    if (is_android && is_clang) {
+      # Disable the integrated assembler and use the one shipped with the NDK.
+      import("//build/config/android/config.gni")
+      rebased_android_toolchain_root =
+          rebase_path(android_toolchain_root, root_build_dir)
+      asmflags = [
+        "-fno-integrated-as",
+        "-B${rebased_android_toolchain_root}/bin",
+      ]
+    }
+
     if (is_msan) {
       public_configs = [ ":no_asm_config" ]
     } else if (current_cpu == "x64") {
