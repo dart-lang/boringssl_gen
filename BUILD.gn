@@ -49,7 +49,7 @@ if (is_win) {
     sources = []
     include_dirs = [ "src/include" ]
 
-    if (is_android && is_clang) {
+    if ((current_cpu == "arm" || current_cpu == "arm64") && is_android && is_clang) {
       # Disable the integrated assembler and use the one shipped with the NDK.
       import("//build/config/android/config.gni")
       rebased_android_toolchain_root =
