@@ -55,6 +55,9 @@ source_set("boringssl_asm") {
       "-fno-integrated-as",
       "-B${rebased_android_toolchain_root}/bin",
     ]
+    if (current_cpu == "arm64") {
+      asmflags += ["-Wa,-march=armv8-a+crypto"]
+    }
   }
 
   if (is_msan) {
