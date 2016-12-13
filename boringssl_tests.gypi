@@ -273,6 +273,48 @@
       'msvs_disabled_warnings': [ 4267, ],
     },
     {
+      'target_name': 'boringssl_p256-x86_64_test',
+      'type': 'executable',
+      'dependencies': [
+        'boringssl.gyp:boringssl',
+      ],
+      'sources': [
+        'src/crypto/ec/p256-x86_64_test.cc',
+        '<@(boringssl_test_support_sources)',
+      ],
+      # TODO(davidben): Fix size_t truncations in BoringSSL.
+      # https://crbug.com/429039
+      'msvs_disabled_warnings': [ 4267, ],
+    },
+    {
+      'target_name': 'boringssl_ecdh_test',
+      'type': 'executable',
+      'dependencies': [
+        'boringssl.gyp:boringssl',
+      ],
+      'sources': [
+        'src/crypto/ecdh/ecdh_test.cc',
+        '<@(boringssl_test_support_sources)',
+      ],
+      # TODO(davidben): Fix size_t truncations in BoringSSL.
+      # https://crbug.com/429039
+      'msvs_disabled_warnings': [ 4267, ],
+    },
+    {
+      'target_name': 'boringssl_ecdsa_sign_test',
+      'type': 'executable',
+      'dependencies': [
+        'boringssl.gyp:boringssl',
+      ],
+      'sources': [
+        'src/crypto/ecdsa/ecdsa_sign_test.cc',
+        '<@(boringssl_test_support_sources)',
+      ],
+      # TODO(davidben): Fix size_t truncations in BoringSSL.
+      # https://crbug.com/429039
+      'msvs_disabled_warnings': [ 4267, ],
+    },
+    {
       'target_name': 'boringssl_ecdsa_test',
       'type': 'executable',
       'dependencies': [
@@ -280,6 +322,20 @@
       ],
       'sources': [
         'src/crypto/ecdsa/ecdsa_test.cc',
+        '<@(boringssl_test_support_sources)',
+      ],
+      # TODO(davidben): Fix size_t truncations in BoringSSL.
+      # https://crbug.com/429039
+      'msvs_disabled_warnings': [ 4267, ],
+    },
+    {
+      'target_name': 'boringssl_ecdsa_verify_test',
+      'type': 'executable',
+      'dependencies': [
+        'boringssl.gyp:boringssl',
+      ],
+      'sources': [
+        'src/crypto/ecdsa/ecdsa_verify_test.cc',
         '<@(boringssl_test_support_sources)',
       ],
       # TODO(davidben): Fix size_t truncations in BoringSSL.
@@ -391,49 +447,7 @@
         'boringssl.gyp:boringssl',
       ],
       'sources': [
-        'src/crypto/modes/gcm_test.c',
-        '<@(boringssl_test_support_sources)',
-      ],
-      # TODO(davidben): Fix size_t truncations in BoringSSL.
-      # https://crbug.com/429039
-      'msvs_disabled_warnings': [ 4267, ],
-    },
-    {
-      'target_name': 'boringssl_newhope_statistical_test',
-      'type': 'executable',
-      'dependencies': [
-        'boringssl.gyp:boringssl',
-      ],
-      'sources': [
-        'src/crypto/newhope/newhope_statistical_test.cc',
-        '<@(boringssl_test_support_sources)',
-      ],
-      # TODO(davidben): Fix size_t truncations in BoringSSL.
-      # https://crbug.com/429039
-      'msvs_disabled_warnings': [ 4267, ],
-    },
-    {
-      'target_name': 'boringssl_newhope_test',
-      'type': 'executable',
-      'dependencies': [
-        'boringssl.gyp:boringssl',
-      ],
-      'sources': [
-        'src/crypto/newhope/newhope_test.cc',
-        '<@(boringssl_test_support_sources)',
-      ],
-      # TODO(davidben): Fix size_t truncations in BoringSSL.
-      # https://crbug.com/429039
-      'msvs_disabled_warnings': [ 4267, ],
-    },
-    {
-      'target_name': 'boringssl_newhope_vectors_test',
-      'type': 'executable',
-      'dependencies': [
-        'boringssl.gyp:boringssl',
-      ],
-      'sources': [
-        'src/crypto/newhope/newhope_vectors_test.cc',
+        'src/crypto/modes/gcm_test.cc',
         '<@(boringssl_test_support_sources)',
       ],
       # TODO(davidben): Fix size_t truncations in BoringSSL.
@@ -490,6 +504,20 @@
       ],
       'sources': [
         'src/crypto/poly1305/poly1305_test.cc',
+        '<@(boringssl_test_support_sources)',
+      ],
+      # TODO(davidben): Fix size_t truncations in BoringSSL.
+      # https://crbug.com/429039
+      'msvs_disabled_warnings': [ 4267, ],
+    },
+    {
+      'target_name': 'boringssl_pool_test',
+      'type': 'executable',
+      'dependencies': [
+        'boringssl.gyp:boringssl',
+      ],
+      'sources': [
+        'src/crypto/pool/pool_test.cc',
         '<@(boringssl_test_support_sources)',
       ],
       # TODO(davidben): Fix size_t truncations in BoringSSL.
@@ -614,12 +642,10 @@
       'src/crypto/test/file_test.cc',
       'src/crypto/test/file_test.h',
       'src/crypto/test/malloc.cc',
-      'src/crypto/test/scoped_types.h',
       'src/crypto/test/test_util.cc',
       'src/crypto/test/test_util.h',
       'src/ssl/test/async_bio.h',
       'src/ssl/test/packeted_bio.h',
-      'src/ssl/test/scoped_types.h',
       'src/ssl/test/test_config.h',
     ],
     'boringssl_test_targets': [
@@ -638,7 +664,10 @@
       'boringssl_digest_test',
       'boringssl_dsa_test',
       'boringssl_ec_test',
+      'boringssl_ecdh_test',
+      'boringssl_ecdsa_sign_test',
       'boringssl_ecdsa_test',
+      'boringssl_ecdsa_verify_test',
       'boringssl_ed25519_test',
       'boringssl_err_test',
       'boringssl_evp_extra_test',
@@ -648,15 +677,14 @@
       'boringssl_hkdf_test',
       'boringssl_hmac_test',
       'boringssl_lhash_test',
-      'boringssl_newhope_statistical_test',
-      'boringssl_newhope_test',
-      'boringssl_newhope_vectors_test',
       'boringssl_obj_test',
+      'boringssl_p256-x86_64_test',
       'boringssl_pbkdf_test',
       'boringssl_pkcs12_test',
       'boringssl_pkcs7_test',
       'boringssl_pkcs8_test',
       'boringssl_poly1305_test',
+      'boringssl_pool_test',
       'boringssl_refcount_test',
       'boringssl_rsa_test',
       'boringssl_spake25519_test',
