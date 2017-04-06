@@ -24,10 +24,7 @@ config("internal_config") {
   ]
   if (is_posix) {
     cflags_c = [ "-std=c99" ]
-    defines += [
-      "_BSD_SOURCE",  # Needed for broken uclibc headers.
-      "_XOPEN_SOURCE=700"
-    ]
+    defines += [ "_XOPEN_SOURCE=700" ]
   }
 }
 
