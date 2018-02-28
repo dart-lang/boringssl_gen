@@ -1,9 +1,15 @@
 #if defined(__arm__)
 #include <openssl/arm_arch.h>
 
+@ Silence ARMv8 deprecated IT instruction warnings. This file is used by both
+@ ARMv7 and ARMv8 processors and does not use ARMv8 instructions.
+.arch	armv7-a
+
 .text
-#if defined(__thumb2__)
+#if defined(__thumb2__) || defined(__clang__)
 .syntax	unified
+#endif
+#if defined(__thumb2__)
 .thumb
 #else
 .code	32
@@ -1457,7 +1463,7 @@ ChaCha20_neon:
 	ldrb	r9,[r12],#1		@ read input
 	subs	r11,r11,#1
 	eor	r8,r8,r9
-	strb	r8,[r14],#1		@ store ouput
+	strb	r8,[r14],#1		@ store output
 	bne	.Loop_tail_neon
 
 .Ldone_neon:

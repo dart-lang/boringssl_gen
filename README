@@ -8,9 +8,11 @@ https://boringssl.googlesource.com/boringssl.git
 
 at revision:
 
-d519bf6be0b447fb80fbc539d4bff4479b5482a2
+a62dbf88d8a3c04446db833a1eb80a620cb1514d
 
 To roll boringssl forward, delete all but this file and the above mentioned
 files, checkout the new boringssl into a subdirectory called src/, and run the
 script src/util/generate_build_files.py with appropriate arguments. It may also
 be necessary to update BUILD.gn, etc.
+
+Then submit a pull request on github.
