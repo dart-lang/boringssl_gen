@@ -80,6 +80,10 @@ source_set("boringssl_asm") {
     }
   } else if (current_cpu == "arm" && (is_linux || is_android)) {
     sources += crypto_sources_linux_arm
+    if (is_linux) {
+      # The clang integrated assembler can't handle this code with -mthumb.
+      configs -= [ "//build/config/compiler:compiler_arm_thumb" ]
+    }
   } else if (current_cpu == "arm64" && (is_linux || is_android)) {
     sources += crypto_sources_linux_aarch64
     asmflags += [ "-march=armv8-a+crypto" ]
