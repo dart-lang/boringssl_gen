@@ -35,8 +35,6 @@ config("no_asm_config") {
   defines = [ "OPENSSL_NO_ASM" ]
 }
 
-all_sources = crypto_sources + ssl_sources
-
 # This has no sources on some platforms so must be a source_set.
 source_set("boringssl_asm") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
@@ -88,8 +86,11 @@ source_set("boringssl_asm") {
   }
 }
 
-component("boringssl") {
-  sources = all_sources
+source_set("crypto") {
+  sources = crypto_sources
+  public_configs = [ ":external_config" ]
+  configs += [ ":internal_config" ]
+
   if (is_win) {
     configs += [ ":no_asm_config" ]
   } else {
@@ -98,9 +99,24 @@ component("boringssl") {
     ]
   }
 
-  public_configs = [ ":external_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("ssl") {
+  sources = ssl_sources
+  deps = [ ":crypto" ]
   configs += [ ":internal_config" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+component("boringssl") {
+  public_deps = [
+    ":crypto",
+    ":ssl"
+  ]
+
+  public_configs = [ ":external_config" ]
 }
