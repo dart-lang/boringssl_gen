@@ -7,13 +7,13 @@ https://boringssl.googlesource.com/boringssl.git
 
 at revision:
 
-189270cd190267f5bd60cfe8f8ce7a61d07ba6f4
+702e2b6d3831486535e958f262a05c75a5cb312e
 
 To roll boringssl forward:
 - Update the hash for boringssl_rev in the DEPS file
 - gclient sync
 - In this directory: git checkout -b roll-boringssl-gen origin/master
-- Remove all files in this directory except src/, README, and BUILD.gn
+- Remove all files in this directory except src/, codereview.settings, README, and BUILD.gn
 - Run the script '$ python src/util/generate_build_files.py gn'
 - Build the Dart SDK. Updates to BUILD.gn may be needed.
 - git commit -a -m "Roll generated boringssl files to $HASH"

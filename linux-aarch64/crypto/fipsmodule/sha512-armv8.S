@@ -1,3 +1,10 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__aarch64__)
 // Copyright 2014-2016 The OpenSSL Project Authors. All Rights Reserved.
 //
@@ -1073,3 +1080,4 @@ sha512_block_data_order:
 .comm	OPENSSL_armcap_P,4,4
 #endif
 #endif
+#endif  // !OPENSSL_NO_ASM

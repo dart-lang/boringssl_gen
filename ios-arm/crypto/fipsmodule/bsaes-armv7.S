@@ -1,3 +1,10 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 @ Copyright 2012-2016 The OpenSSL Project Authors. All Rights Reserved.
 @
 @ Licensed under the OpenSSL license (the "License").  You may not use
@@ -2573,3 +2580,4 @@ Lxts_dec_bzero:@ wipe key schedule [if any]
 
 
 #endif
+#endif  // !OPENSSL_NO_ASM

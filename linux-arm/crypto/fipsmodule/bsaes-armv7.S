@@ -1,3 +1,10 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__arm__)
 @ Copyright 2012-2016 The OpenSSL Project Authors. All Rights Reserved.
 @
@@ -2561,3 +2568,4 @@ bsaes_xts_decrypt:
 .size	bsaes_xts_decrypt,.-bsaes_xts_decrypt
 #endif
 #endif
+#endif  // !OPENSSL_NO_ASM

@@ -1,3 +1,10 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__arm__)
 #include <openssl/arm_arch.h>
 
@@ -1493,3 +1500,4 @@ sha1_block_data_order_armv8:
 .hidden	OPENSSL_armcap_P
 #endif
 #endif
+#endif  // !OPENSSL_NO_ASM

@@ -1,3 +1,10 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__aarch64__)
 #include <openssl/arm_arch.h>
 
@@ -1969,3 +1976,4 @@ ChaCha20_512_neon:
 	ret
 .size	ChaCha20_512_neon,.-ChaCha20_512_neon
 #endif
+#endif  // !OPENSSL_NO_ASM
