@@ -24,6 +24,8 @@ config("internal_config") {
     "OPENSSL_SMALL",
   ]
   if (is_posix) {
+    # We are only interested in exposing the exported symbols (for size reasons).
+    cflags = [ "-fvisibility=hidden" ]
     cflags_c = [ "-std=c11" ]
     cflags_cc = [ "-std=c++14" ]
     defines += [ "_XOPEN_SOURCE=700" ]
