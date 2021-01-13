@@ -6,6 +6,16 @@ import("//build/config/android/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("BUILD.generated.gni")
 
+declare_args() {
+  # Only applies to Android, and only applies to arm/arm64.
+  # At one point, it was important to use the NDK's `as` from a GCC based
+  # toolchain. With more recent versions of clang and the NDK, using the
+  # integrated assembler is fine, and setting this to false may fall back to
+  # some other `as` on the path, which may not be compatible with the toolchain
+  # used to build this target.
+  bssl_use_clang_integrated_as = false
+}
+
 # Config for us and everybody else depending on BoringSSL.
 config("external_config") {
   include_dirs = [ "src/include" ]
@@ -47,14 +57,15 @@ source_set("boringssl_asm") {
   asmflags = []
 
   if ((current_cpu == "arm" || current_cpu == "arm64") && is_android && is_clang) {
-    # Disable the integrated assembler and use the one shipped with the NDK.
-    import("//build/config/android/config.gni")
-    rebased_android_toolchain_root =
-        rebase_path(android_toolchain_root, root_build_dir)
-    asmflags += [
-      "-fno-integrated-as",
-      "-B${rebased_android_toolchain_root}/bin",
-    ]
+    if (!bssl_use_clang_integrated_as) {
+      # Disable the integrated assembler and use the one shipped with the NDK.
+      rebased_android_toolchain_root =
+          rebase_path(android_toolchain_root, root_build_dir)
+      asmflags += [
+        "-fno-integrated-as",
+        "-B${rebased_android_toolchain_root}/bin",
+      ]
+    }
     if (current_cpu == "arm64") {
       asmflags += ["-Wa,-march=armv8-a+crypto"]
     }
