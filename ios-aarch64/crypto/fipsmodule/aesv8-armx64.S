@@ -1,10 +1,11 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
+#if !defined(__has_feature)
+#define __has_feature(x) 0
+#endif
 #if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
 #define OPENSSL_NO_ASM
-#endif
 #endif
 
 #if !defined(OPENSSL_NO_ASM)
@@ -31,6 +32,8 @@ Lrcon:
 .align	5
 _aes_hw_set_encrypt_key:
 Lenc_key:
+	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
+	AARCH64_VALID_CALL_TARGET
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 	mov	x3,#-1
@@ -199,6 +202,7 @@ Lenc_key_abort:
 
 .align	5
 _aes_hw_set_decrypt_key:
+	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 	bl	Lenc_key
@@ -232,6 +236,7 @@ Loop_imc:
 	eor	x0,x0,x0		// return value
 Ldec_key_abort:
 	ldp	x29,x30,[sp],#16
+	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
 .globl	_aes_hw_encrypt
@@ -239,6 +244,7 @@ Ldec_key_abort:
 
 .align	5
 _aes_hw_encrypt:
+	AARCH64_VALID_CALL_TARGET
 	ldr	w3,[x2,#240]
 	ld1	{v0.4s},[x2],#16
 	ld1	{v2.16b},[x0]
@@ -269,6 +275,7 @@ Loop_enc:
 
 .align	5
 _aes_hw_decrypt:
+	AARCH64_VALID_CALL_TARGET
 	ldr	w3,[x2,#240]
 	ld1	{v0.4s},[x2],#16
 	ld1	{v2.16b},[x0]
@@ -299,6 +306,8 @@ Loop_dec:
 
 .align	5
 _aes_hw_cbc_encrypt:
+	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
+	AARCH64_VALID_CALL_TARGET
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 	subs	x2,x2,#16
@@ -590,6 +599,8 @@ Lcbc_abort:
 
 .align	5
 _aes_hw_ctr32_encrypt_blocks:
+	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
+	AARCH64_VALID_CALL_TARGET
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 	ldr	w5,[x3,#240]
