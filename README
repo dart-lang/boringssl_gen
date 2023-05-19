@@ -7,7 +7,7 @@ https://boringssl.googlesource.com/boringssl.git
 
 at revision:
 
-4dfd5af70191b068aebe567b8e29ce108cee85ce
+74646566e93de7551bfdfc5f49de7462f13d1d05
 
 To roll boringssl forward:
 - Update the hash for boringssl_rev in the DEPS file

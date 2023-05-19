@@ -32,6 +32,7 @@ config("internal_config") {
     "BORINGSSL_IMPLEMENTATION",
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
+    "OPENSSL_STATIC_ARMCAP",
   ]
   if (is_posix) {
     # We are only interested in exposing the exported symbols (for size reasons).
@@ -56,7 +57,8 @@ source_set("boringssl_asm") {
   include_dirs = [ "src/include" ]
   asmflags = []
 
-  if ((current_cpu == "arm" || current_cpu == "arm64") && is_android && is_clang) {
+  if ((current_cpu == "arm" || current_cpu == "arm64") && is_android &&
+      is_clang) {
     if (!bssl_use_clang_integrated_as) {
       # Disable the integrated assembler and use the one shipped with the NDK.
       rebased_android_toolchain_root =
@@ -67,33 +69,46 @@ source_set("boringssl_asm") {
       ]
     }
     if (current_cpu == "arm64") {
-      asmflags += ["-Wa,-march=armv8-a+crypto"]
+      asmflags += [ "-Wa,-march=armv8-a+crypto" ]
     }
   }
 
   if (is_msan) {
     public_configs = [ ":no_asm_config" ]
   } else if (current_cpu == "x64") {
-    if (is_mac) {
-      sources += crypto_sources_mac_x86_64
-    } else if (is_linux || is_android) {
+    if (is_mac || is_ios) {
+      sources += crypto_sources_apple_x86_64
+    } else if (is_linux || is_chromeos || is_android) {
       sources += crypto_sources_linux_x86_64
     } else {
       public_configs = [ ":no_asm_config" ]
     }
   } else if (current_cpu == "x86") {
-    if (is_mac) {
-      sources += crypto_sources_mac_x86
-    } else if (is_linux || is_android) {
+    if (is_mac || is_ios) {
+      sources += crypto_sources_apple_x86
+    } else if (is_linux || is_chromeos || is_android) {
       sources += crypto_sources_linux_x86
     } else {
       public_configs = [ ":no_asm_config" ]
     }
-  } else if (current_cpu == "arm" && (is_linux || is_android)) {
-    sources += crypto_sources_linux_arm
-  } else if (current_cpu == "arm64" && (is_linux || is_android)) {
-    sources += crypto_sources_linux_aarch64
-    asmflags += [ "-march=armv8-a+crypto" ]
+  } else if (current_cpu == "arm") {
+    if (is_linux || is_chromeos || is_android) {
+      sources += crypto_sources_linux_arm
+    } else if (is_mac || is_ios) {
+      sources += crypto_sources_apple_arm
+    } else {
+      public_configs = [ ":no_asm_config" ]
+    }
+  } else if (current_cpu == "arm64") {
+    if (is_linux || is_chromeos || is_android) {
+      sources += crypto_sources_linux_aarch64
+    } else if (is_mac || is_ios) {
+      sources += crypto_sources_apple_aarch64
+    } else if (is_win) {
+      sources += crypto_sources_win_aarch64
+    } else {
+      public_configs = [ ":no_asm_config" ]
+    }
   } else {
     public_configs = [ ":no_asm_config" ]
   }
@@ -107,9 +122,7 @@ source_set("crypto") {
   if (is_win) {
     configs += [ ":no_asm_config" ]
   } else {
-    deps = [
-      ":boringssl_asm",
-    ]
+    deps = [ ":boringssl_asm" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -128,7 +141,7 @@ source_set("ssl") {
 component("boringssl") {
   public_deps = [
     ":crypto",
-    ":ssl"
+    ":ssl",
   ]
 
   public_configs = [ ":external_config" ]
