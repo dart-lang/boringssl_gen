@@ -75,42 +75,10 @@ source_set("boringssl_asm") {
 
   if (is_msan) {
     public_configs = [ ":no_asm_config" ]
-  } else if (current_cpu == "x64") {
-    if (is_mac || is_ios) {
-      sources += crypto_sources_apple_x86_64
-    } else if (is_linux || is_chromeos || is_android) {
-      sources += crypto_sources_linux_x86_64
-    } else {
-      public_configs = [ ":no_asm_config" ]
-    }
-  } else if (current_cpu == "x86") {
-    if (is_mac || is_ios) {
-      sources += crypto_sources_apple_x86
-    } else if (is_linux || is_chromeos || is_android) {
-      sources += crypto_sources_linux_x86
-    } else {
-      public_configs = [ ":no_asm_config" ]
-    }
-  } else if (current_cpu == "arm") {
-    if (is_linux || is_chromeos || is_android) {
-      sources += crypto_sources_linux_arm
-    } else if (is_mac || is_ios) {
-      sources += crypto_sources_apple_arm
-    } else {
-      public_configs = [ ":no_asm_config" ]
-    }
-  } else if (current_cpu == "arm64") {
-    if (is_linux || is_chromeos || is_android) {
-      sources += crypto_sources_linux_aarch64
-    } else if (is_mac || is_ios) {
-      sources += crypto_sources_apple_aarch64
-    } else if (is_win) {
-      sources += crypto_sources_win_aarch64
-    } else {
-      public_configs = [ ":no_asm_config" ]
-    }
-  } else {
+  } else if (is_win && (current_cpu == "x64" || current_cpu == "x86")) {
     public_configs = [ ":no_asm_config" ]
+  } else {
+    sources += crypto_sources_asm
   }
 }
 
